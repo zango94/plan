@@ -7,6 +7,7 @@ $haslo = $_SESSION['haslo'];
 			$extra = 'logowanie.php?error=4';
 			header("Location: http://$host$uri/$extra");
 }
+//sprawdzenie loginu i hasła
 $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$nick' AND `haslo`='$haslo' LIMIT 1"));
     if (empty($user[id]) OR !isset($user[id])) {
 			$host  = $_SERVER['HTTP_HOST'];
@@ -14,7 +15,7 @@ $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$
 			$extra = 'logowanie.php?error=4';
 			header("Location: http://$host$uri/$extra");
 }
-
+//sprawdzenie czy istnieje użytkownik
 $a = trim($_REQUEST['a']);
 $id = trim($_GET['id']);
 
@@ -30,6 +31,7 @@ if($a == 'save') {
 			$extra = 'rocznik.php?i=akt';
 			header("Location: http://$host$uri/$extra");
 }
+//aktualizacja nazwy rocznika
 elseif($a == 'del') {
     $id = $_GET['id'];
     $nazwa = trim($_POST['nazwa']);
@@ -41,6 +43,7 @@ elseif($a == 'del') {
 			$extra = 'rocznik.php?i=us';
 			header("Location: http://$host$uri/$extra");
 }
+//usuwanie rocznika
 elseif($a == 'add') {
     $id = $_POST['id'];
     $nazwa = trim($_POST['nazwa']);
@@ -51,7 +54,7 @@ elseif($a == 'add') {
 			$extra = 'rocznik.php?i=dod';
 			header("Location: http://$host$uri/$extra");
 }
-
+// dodawanie rocznika
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +93,7 @@ if ($_GET['i']=="dod") {echo "<p class=\"alert alert-success\" role=\"alert\">Da
 
 <?php
 
-$wynik = mysql_query("SELECT * FROM rocznik order by nazwa") or die('Błąd');
+$wynik = mysql_query("SELECT * FROM rocznik order by nazwa") or die('Błąd'); // zapytanie do bazy z rocznikami
 $i=1;
 if(mysql_num_rows($wynik) > 0) {
     echo "<table class=\"table table-striped table-responsive\" ";
@@ -106,9 +109,9 @@ if(mysql_num_rows($wynik) > 0) {
 		<input class=\"btn btn-success btn-sm\" type=\"submit\" value=\"Zmień\" /> </form>
         <a class=\"btn btn-danger btn-sm\" href=\"rocznik.php?a=del&amp;id={$r['id']}\">Usuń</a></td>";
         echo "</tr>";
-    }
+    }// jeżeli wynik zapytania jest > 0 tworzymy tabele z polami do wypełnienia
 
-echo "
+echo " // wyświetlanie pól do dodania nowego rocznika
 <tr>
 <td style=\"vertical-align: middle;\">".$i."</td>
 <td style=\"vertical-align: middle;\">
@@ -124,7 +127,6 @@ echo "
 ";
     echo "</table>";
 }
-
  ?>
 		</div>
 	</div>
