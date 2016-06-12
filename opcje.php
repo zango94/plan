@@ -6,14 +6,14 @@ $haslo = $_SESSION['haslo'];
 			$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 			$extra = 'logowanie.php?error=4';
 			header("Location: http://$host$uri/$extra");
-}
+}// sprawdzanie login i hasła
 $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$nick' AND `haslo`='$haslo' LIMIT 1"));
     if (empty($user[id]) OR !isset($user[id])) {
 			$host  = $_SERVER['HTTP_HOST'];
 			$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 			$extra = 'logowanie.php?error=4';
 			header("Location: http://$host$uri/$extra");
-}
+}// sprawdzanie czy użytkownik istnieje
 
 $a = trim($_REQUEST['a']);
 $id = trim($_GET['id']);
@@ -27,7 +27,7 @@ if($a == 'save') {
     $startg = trim($_POST['startg']);
     $startm = trim($_POST['startm']);
 
-    mysql_query("UPDATE opcje SET dl_godz='$dl_godz',dl_prz='$dl_prz',startg='$startg',startm=$startm WHERE id=1") or die('Błąd zapytania');
+    mysql_query("UPDATE opcje SET dl_godz='$dl_godz',dl_prz='$dl_prz',startg='$startg',startm=$startm WHERE id=1") or die('Błąd zapytania'); //aktualizacja tabeli opcje
     $host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'opcje.php?i=akt';
@@ -72,8 +72,8 @@ if ($_GET['i']=="dod") {echo "<p class=\"alert alert-success\" role=\"alert\">Da
 <?php
 
 
-$wynik = mysql_query("SELECT * FROM opcje where id=1") or die('Błąd');
-if(mysql_num_rows($wynik) > 0) {
+$wynik = mysql_query("SELECT * FROM opcje where id=1") or die('Błąd');// zapytanie do tabeli opcje
+if(mysql_num_rows($wynik) > 0) {// jezeli wynik zapytania > 0 to tworzymy tabel do danych
     echo "<table class=\"table table-striped table-responsive\" ";
     echo "<tr><th>Długość godziny (min)</th><th>Długość przerwy (min)</th><th>Początek zajęć (godz)</th><th>Początek zajęć (min)</th><th></th></tr>";
     while($r = mysql_fetch_assoc($wynik)) {
