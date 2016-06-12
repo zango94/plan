@@ -25,7 +25,7 @@ $w = mysql_query("SELECT rocznik.nazwa rn,grupy.nazwa gn,plan.dzien,plan.godzina
                       join sale on sale.id=plan.id_sala
                       where rocznik.id=$id
                       order by plan.dzien, plan.godzina, grupy.nazwa,sale.numer") or die('Błąd');
-
+// zapytanie do tabel znajdujących się w bazie danych
 $file = fopen('plan.csv', 'w');
 
 
@@ -69,13 +69,10 @@ if(mysql_num_rows($w) > 0)
 
 	fclose($file);
 
-//$rocznik=$rocznik.".csv";
-//echo $rocznik;
-
-$filename = 'plan.csv';//wybieramy plik do �ci�gni�cia
-header('Content-Type:application/force-download');//ustawiamy mu uniwersalny typ mime (mo�na bawi� si� w nadawanie mu application/msword, image/gif, itd...  case "pdf": $ctype="application/pdf"; break;
-header('Content-Disposition: attachment; filename="'.basename($filename).'";');//tutaj podajemy nazw� pliku - domy�lnie ustawi�em, aby plik nazywa� si� tak jak orygina�
-header('Content-Length:'.@filesize($filename));//dodajemy wielko�� pliku
+$filename = 'plan.csv';//wybieramy plik do ściągnięcia
+header('Content-Type:application/force-download');//ustawiamy mu uniwersalny typ mime
+header('Content-Disposition: attachment; filename="'.basename($filename).'";');//tutaj podajemy nazwę pliku
+header('Content-Length:'.@filesize($filename));//dodajemy wielkokość pliku
 @readfile($filename)or die('File not found.');//czytamy plik
 
 
