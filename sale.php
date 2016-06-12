@@ -6,15 +6,14 @@ $haslo = $_SESSION['haslo'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'logowanie.php?error=4';
 	header("Location: http://$host$uri/$extra");
-}
+}//sprawdzanie loginu i hasła
 $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$nick' AND `haslo`='$haslo' LIMIT 1"));
     if (empty($user[id]) OR !isset($user[id])) {
 	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'logowanie.php?error=4';
 	header("Location: http://$host$uri/$extra");
-
-}
+}// spradzanie czy istnieje użytkownik
 
 $a = trim($_REQUEST['a']);
 $id = trim($_GET['id']);
@@ -25,9 +24,8 @@ if($a == 'save') {
     $id = $_POST['id'];
     $nazwa = trim($_POST['nazwa']);
 	$rodzaj = trim($_POST['rodzaj']);
-
+	/* aktualizacja tabeli sale */
     mysql_query("UPDATE sale SET numer='$nazwa',rodzaj='$rodzaj' WHERE id='$id'") or die('Błąd zapytania');
-   // header('Location: sale.php?i=akt');
 	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'sale.php?i=akt';
@@ -36,8 +34,7 @@ if($a == 'save') {
 elseif($a == 'del') {
 
     $id = $_GET['id'];
-
-
+	/* usuwanie danych z tabeli sale */
     mysql_query("DELETE FROM sale WHERE id='$id'") or die('Błąd zapytania');
     $host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
@@ -48,7 +45,7 @@ elseif($a == 'add') {
     $id = $_POST['id'];
     $nazwa = trim($_POST['nazwa']);
 	$rodzaj = trim($_POST['rodzaj']);
-
+	/* dodawanie danych do tabeli sale */
     mysql_query("INSERT INTO sale (numer,rodzaj) VALUES ('$nazwa','$rodzaj')") or die('Błąd zapytania');
     $host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
@@ -93,9 +90,9 @@ if ($_GET['i']=="dod") {echo "<p class=\"alert alert-success\" role=\"alert\">Da
 
 <?php
 
-$wynik = mysql_query("SELECT * FROM sale order by numer") or die('Błąd');
+$wynik = mysql_query("SELECT * FROM sale order by numer") or die('Błąd');//zapytanie do tabeli sale
 $i=1;
-if(mysql_num_rows($wynik) > 0) {
+if(mysql_num_rows($wynik) > 0) {// jeżeli wynik zapytania > 0 tworzymy tabele z polami do wpisania
     echo "<table class=\"table table-striped table-responsive\" ";
     echo "<tr><th>Lp.</th><th>Nazwa</th><th>Rodzaj sali</th><th></th></tr>";
     while($r = mysql_fetch_assoc($wynik)) {
@@ -114,6 +111,7 @@ if(mysql_num_rows($wynik) > 0) {
         <a class=\"btn btn-danger btn-sm\" href=\"sale.php?a=del&amp;id={$r['id']}\">Usuń</a></td>";
         echo "</tr>";
     }
+/* wyświetlanie pól do wpisania nowego przedmiotu */
 echo "
 <tr>
 <td style=\"vertical-align: middle;\">".$i."</td>
