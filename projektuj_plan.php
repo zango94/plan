@@ -1,6 +1,22 @@
 <?php
 include("config.php");
-
+$nick = $_SESSION['nick'];
+$haslo = $_SESSION['haslo'];
+    if ((empty($nick)) AND (empty($haslo))) {
+	$host  = $_SERVER['HTTP_HOST'];
+	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+	$extra = 'logowanie.php?error=4';
+	header("Location: http://$host$uri/$extra");
+//sprawdzenie loginu i hasła
+}
+$user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$nick' AND `haslo`='$haslo' LIMIT 1"));
+    if (empty($user[id]) OR !isset($user[id])) {
+	$host  = $_SERVER['HTTP_HOST'];
+	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+	$extra = 'logowanie.php?error=4';
+	header("Location: http://$host$uri/$extra");
+//sprawdzenie czy istnieje użytkownik
+}
 
 
 $a = trim($_GET['a']);
@@ -17,14 +33,14 @@ $koniec = ($_GET['koniec']);
 $error=$_GET["error"];
 
 if($a == 'del') {
+	/* usuwanie planu z tabeli */
     mysql_query("DELETE FROM plan WHERE id='$id_planu'") or die('Błąd zapytania');
-    //echo 'Dane zostały usunięte';
 	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'projektuj_plan.php?a=zobacz&i=us&id='.$id;
 	header("Location: http://$host$uri/$extra");
 }
-if($a == 'addk') {
+if($a == 'addk') { //ustawianie czy plan jest skończony
 	$kon = (isset($_GET['koniec'])) ? 1 : 0;
     mysql_query("UPDATE rocznik SET koniec='$kon' WHERE id='$id'") or die('Błąd zapytania');
 	mysql_query("UPDATE rocznik SET data=sysdate() WHERE id='$id'") or die('Błąd zapytania');
@@ -33,9 +49,8 @@ if($a == 'addk') {
 	$extra = 'projektuj_plan.php?a=zobacz&i=zap&id='.$id;
 	header("Location: http://$host$uri/$extra");
 }
-if($a == 'add') {
+if($a == 'add') {// walidacja danych(czy wolny nauczyciel,sala,grupa)
     if (empty($id_przedmiot) OR empty($id_grupa) OR  empty($id_nauczyciel) OR empty($dzien) or empty($godzina) OR empty($id_sala)) {
-      
 		$host  = $_SERVER['HTTP_HOST'];
 		$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 		$extra = 'projektuj_plan.php?error=1&id_przedmiot=".$id_przedmiot."&id_grupa=".$id_grupa."&id_nauczyciel=".$id_nauczyciel."&dzien=".$dzien."&godzina=".$godzina."&id_sala=".$id_sala."&id=".$id."&a=zobacz';
@@ -63,14 +78,12 @@ if($a == 'add') {
     else {
 
 
-    /* uaktualniamy tabelÃª test */
+    /* dodawanie danych do tabeli plan */
     mysql_query("INSERT INTO plan (id_przedmiot,id_grupa,id_nauczyciel,dzien,godzina,id_sala)
                           VALUES ('$id_przedmiot','$id_grupa','$id_nauczyciel','$dzien','$godzina','$id_sala')") or die('Błąd zapytania');
 
 	mysql_query("UPDATE rocznik SET data=sysdate() WHERE id='$id'") or die('Błąd zapytania');
-
-    //echo 'Dane zostały dodane';
-	
+	/* aktualizacja daty modyfikacji planu */
 		$host  = $_SERVER['HTTP_HOST'];
 		$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 		$extra = 'projektuj_plan.php?a=zobacz&i=dod&id='.$id;
@@ -96,19 +109,15 @@ if($a == 'add') {
   <div class="container">
 	<?php include("head.php");?>
 	<div class="row">
-  <!--  <div class="col-md-4">
       <?php include("left_menu.php") ?>
-    </div>-->
 		<div class="col-md-12">
       <a class="btn btn-primary btn-large" href="admin.php">Powrót</a>
-
-
 
       			<h2>
       				Plan zajęć
       			</h2>
 
-            <?php
+            <?php // błędy do wyświetlenia
             if ($error==1) {echo "<p class=\"alert alert-danger\" role=\"alert\">Uzupełnij wszystkie pola !!!</p>";}
             if ($error==2) {echo "<p class=\"alert alert-danger\" role=\"alert\">Wybrana sala jest zajęta !!!</p>";}
             if ($error==3) {echo "<p class=\"alert alert-danger\" role=\"alert\">Wybrany wykładowca w tym czasie ma już inne zajęcia !!!</p>";}
@@ -126,8 +135,8 @@ if($a == 'add') {
 
       <?php
 
-      $wynik = mysql_query("SELECT * FROM rocznik order by nazwa") or die('Błąd');
-      if(mysql_num_rows($wynik) > 0) {
+      $wynik = mysql_query("SELECT * FROM rocznik order by nazwa") or die('Błąd');// zapytanie do tabeli roczniki
+      if(mysql_num_rows($wynik) > 0) { // jeżeli wynik zapytania > 0 tworzymy listę wyboru
 
           echo "<form method=\"get\" action=\"projektuj_plan.php\">";
           echo "<table class=\"table\" ><tr><td><input type=\"hidden\" name=\"a\" value=\"zobacz\" />";
@@ -143,7 +152,6 @@ if($a == 'add') {
         }
 		?>
 
-
 <?php if($a=='zobacz') {
 
   $wynik = mysql_query("SELECT * FROM rocznik where id=$id") or die('Błąd');
@@ -152,7 +160,7 @@ if($a == 'add') {
   $id_op=$r['id_opcje'];
 
   echo "<center><h2>".$r['nazwa']."</h2></center></br>";
-
+/* zapytanie do tabel z bazy danych */
   $wynik = mysql_query("SELECT rocznik.nazwa rn,grupy.nazwa gn,plan.dzien,plan.godzina,przedmioty.nazwa pn, sale.numer, concat(pracownicy.stopien,' ',pracownicy.imie,' ',pracownicy.nazwisko) nauczyciel FROM rocznik
 join grupy on grupy.id_rocznika=rocznik.id
 join plan on plan.id_grupa=grupy.id
@@ -172,7 +180,7 @@ $startg=$r['startg'];
 $startm=$r['startm'];
 
 
-    #--------- Tabela ------------
+    // tworzenie tabeli z planem zajęć
     echo "<table class=\"table table-bordered table-responsive\" ";
     echo "<tr><th></th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th></tr>";
     $i=1;
@@ -262,13 +270,8 @@ $startm=$r['startm'];
          echo "selected=\"selected\"";
        }
 
-
-
        $s=$startg*60+$startm;
        $pocz=$s+($i-1)*$dl_godz+($i-1)*$dl_prz;
-      # echo ($pocz/60|0).":".($pocz%60);
-
-
 
        echo "value=\"".$i."\">".($pocz/60|0).":";
        if (($pocz%60)<10) { echo "0";}
@@ -276,6 +279,7 @@ $startm=$r['startm'];
 
        $i++;
      }
+     /* wybór grupy */
     echo "</select></td>";
     echo "<td><select class=\"form-control\" name=\"id_grupa\">";
     $w = mysql_query("SELECT * FROM grupy where id_rocznika=$id order by nazwa") or die('Błąd');
@@ -287,7 +291,7 @@ $startm=$r['startm'];
        echo "value=\"".$g['id']."\">".$g['nazwa']."</option>";
      }
     echo "</select></td>";
-
+	/* wybór przedmiotu */
     echo "<td><select class=\"form-control\" name=\"id_przedmiot\">";
     $w = mysql_query("SELECT * FROM przedmioty order by nazwa") or die('Błąd');
      while($g = mysql_fetch_assoc($w)) {
@@ -298,7 +302,7 @@ $startm=$r['startm'];
        echo "value=\"".$g['id']."\">".$g['nazwa']."</option>";
      }
     echo "</select></td>";
-
+	/* wybór sali */
     echo "<td><select class=\"form-control\" name=\"id_sala\">";
     $w = mysql_query("SELECT * FROM sale order by numer") or die('Błąd');
      while($g = mysql_fetch_assoc($w)) {
@@ -309,7 +313,7 @@ $startm=$r['startm'];
        echo "value=\"".$g['id']."\">".$g['numer']."</option>";
      }
     echo "</select></td>";
-
+	/* wybór nauczyciela */
     echo "<td><select class=\"form-control\" name=\"id_nauczyciel\">";
     $w = mysql_query("SELECT id,concat(pracownicy.stopien,' ',substr(pracownicy.imie,1,1),'. ',pracownicy.nazwisko) nauczyciel FROM pracownicy where wykladowca=1 order by nazwisko") or die('Błąd');
      while($g = mysql_fetch_assoc($w)) {
@@ -325,7 +329,6 @@ $startm=$r['startm'];
 
 	<input class=\"btn btn-success btn-sm\" type=\"submit\" value=\"Dodaj zajęcia\" ></form><br/>";
 
-
 	echo "<form method=\"get\" action=\"projektuj_plan.php\">";
 	echo "<input type=\"hidden\" name=\"a\" value=\"addk\" >";
 	echo "<input type=\"hidden\" name=\"id\" value=\"".$id."\">";
@@ -335,19 +338,11 @@ $startm=$r['startm'];
          echo "checked";
        }
 	echo "> Wyświetl plan</label><input class=\"btn btn-success btn-sm\" type=\"submit\" value=\"Zapisz\" ></form>";
-
-
-
-
-
   }  ?>
 
 
 		</div>
 	</div>
-
-
-
 <?php include("foot.php");?>
 </div>
 <script>
