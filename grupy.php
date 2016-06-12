@@ -6,8 +6,7 @@ $haslo = $_SESSION['haslo'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'logowanie.php?error=4';
 	header("Location: http://$host$uri/$extra");
-//echo '<br>Nie byłeś zalogowany albo zostałeś wylogowany<br><a href="index.php">Strona Główna</a><br>';
-//exit;
+//sprawdzenie loginu i hasła
 }
 $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$nick' AND `haslo`='$haslo' LIMIT 1"));
     if (empty($user[id]) OR !isset($user[id])) {
@@ -15,8 +14,7 @@ $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'logowanie.php?error=4';
 	header("Location: http://$host$uri/$extra");
-//echo '<br>Nieprawidłowe logowanie.<br>';
-//exit;
+//sprawdzenie czy istnieje użytkownik
 }
 
 $a = trim($_REQUEST['a']);
@@ -25,12 +23,12 @@ $id = trim($_GET['id']);
 
 if($a == 'save') {
 
-    /* odbieramy zmienne z formularza */
+   
     $id = $_POST['id'];
     $nazwa = trim($_POST['nazwa']);
     $id_rocznika=$_POST['id_rocznika'];
 
-    /* uaktualniamy tabelÃª test */
+    /* aktualizacja tabeli grupy */
     mysql_query("UPDATE grupy SET nazwa='$nazwa',id_rocznika='$id_rocznika' WHERE id='$id'") or die('Błąd zapytania');
     //echo 'Dane zostały zaktualizowane';
     $host  = $_SERVER['HTTP_HOST'];
@@ -39,12 +37,10 @@ if($a == 'save') {
 	header("Location: http://$host$uri/$extra");
 }
 elseif($a == 'del') {
-    /* odbieramy zmienne z formularza */
     $id = $_GET['id'];
 
 
-    /* uaktualniamy tabelÃª test */
-
+    /* usuwanie danych z tabeli grupy */
     mysql_query("DELETE FROM grupy WHERE id='$id'") or die('Błąd zapytania');
     //echo 'Dane zostały usunięte';
     $host  = $_SERVER['HTTP_HOST'];
@@ -53,15 +49,13 @@ elseif($a == 'del') {
 	header("Location: http://$host$uri/$extra");
 }
 elseif($a == 'add') {
-    /* odbieramy zmienne z formularza */
     $id = $_POST['id'];
     $nazwa = trim($_POST['nazwa']);
     $id_rocznika=$_POST['id_rocznika'];
 
-    /* uaktualniamy tabelÃª test */
+    /* dodawanie danych do tabeli grupy */
     mysql_query("INSERT INTO grupy (nazwa,id_rocznika) VALUES ('$nazwa','$id_rocznika')") or die('Błąd zapytania');
-    //echo 'Dane zostały dodane';
-    $host  = $_SERVER['HTTP_HOST'];
+    	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'grupy.php?i=dod';
 	header("Location: http://$host$uri/$extra");
@@ -107,9 +101,9 @@ if ($_GET['i']=="dod") {echo "<p class=\"alert alert-success\" role=\"alert\">Da
 
 
 
-$wynik = mysql_query("SELECT * FROM grupy order by nazwa") or die('Błąd');
+$wynik = mysql_query("SELECT * FROM grupy order by nazwa") or die('Błąd'); // zapytanie do tabeli grupy
 $i=1;
-if(mysql_num_rows($wynik) > 0) {
+if(mysql_num_rows($wynik) > 0) { // jeżeli wynik < 0 tworzymy tabele z polami do wypełnienia
     echo "<table class=\"table table-striped table-responsive\" ";
     echo "<tr><th>Lp.</th><th>Nazwa</th><th>Rocznik</th><th></th></tr>";
     while($r = mysql_fetch_assoc($wynik)) {
@@ -142,7 +136,7 @@ if(mysql_num_rows($wynik) > 0) {
 
 
 
-
+/* wyświetlamy pole do dodania nowej grupy */
 echo "
 <tr>
 <td style=\"vertical-align: middle;\">".$i."</td>
@@ -177,21 +171,12 @@ echo "<td class=\"text-right\">
 
 
     echo "</table>";
-
-
-
-
 }
-
-
-
 
  ?>
 		</div>
 	</div>
-
-
-
+	
 <?php include("foot.php");?>
 </div>
 
