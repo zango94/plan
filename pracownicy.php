@@ -6,14 +6,14 @@ $haslo = $_SESSION['haslo'];
 			$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 			$extra = 'Location: logowanie.php?error=4';
 			header("Location: http://$host$uri/$extra");
-}
+}// sprawdzanie loginu i hasła
 $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$nick' AND `haslo`='$haslo' LIMIT 1"));
     if (empty($user[id]) OR !isset($user[id])) {
 			$host  = $_SERVER['HTTP_HOST'];
 			$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 			$extra = 'Location: logowanie.php?error=4';
 			header("Location: http://$host$uri/$extra");
-}
+}// sprawdzanie czy istnieje użytkownik
 
 $a = trim($_REQUEST['a']);
 $id = trim($_GET['id']);
@@ -26,7 +26,6 @@ if($a == 'save') {
     $wykl = (isset($_POST['wykladowca'])) ? 1 : 0;
     $adm = (isset($_POST['administrator'])) ? 1 : 0;
 
-    /* odbieramy zmienne z formularza */
     $id = $_POST['id'];
     $st = trim($_POST['stopien']);
     $imie = trim($_POST['imie']);
@@ -52,20 +51,17 @@ if($a == 'save') {
     }
 
 
-    /* uaktualniamy tabelÃª test */
+    /* aktualizacja tabeli pracownicy */
     mysql_query("UPDATE pracownicy SET stopien='$st', imie='$imie', nazwisko='$nazwisko', wykladowca='$wykl', admin='$adm'  WHERE id='$id'") or die('Błąd zapytania');
-    //echo 'Dane zostały zaktualizowane';
 	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'pracownicy.php?i=akt';
 	header("Location: http://$host$uri/$extra");
 }
 elseif($a == 'del') {
-    /* odbieramy zmienne z formularza */
     $id = $_GET['id'];
 
-    /* uaktualniamy tabelÃª test */
-
+    /* usuwanie danych z tabeli pracownicy */
     mysql_query("DELETE FROM pracownicy WHERE id='$id'") or die('Błąd zapytania');
     //echo 'Dane zostały usunięte';
     $host  = $_SERVER['HTTP_HOST'];
@@ -74,7 +70,6 @@ elseif($a == 'del') {
 	header("Location: http://$host$uri/$extra");
 }
 elseif($a == 'add') {
-    /* odbieramy zmienne z formularza */
     $st = trim($_POST['stopien']);
     $imie = trim($_POST['imie']);
     $nazwisko = trim($_POST['nazwisko']);
@@ -82,7 +77,7 @@ elseif($a == 'add') {
     $haslo = trim($_POST['haslo']);
 
 
-    /* uaktualniamy tabelÃª test */
+    /* dodawanie danych do tabeli pracownicy */
     mysql_query("INSERT INTO pracownicy (stopien,imie,nazwisko) VALUES ('$st','$imie','$nazwisko')") or die('Błąd zapytania');
     //echo 'Dane zostały dodane';
     $host  = $_SERVER['HTTP_HOST'];
@@ -134,9 +129,9 @@ if ($_GET['error']==1) {echo "<p class=\"alert alert-danger\" role=\"alert\">Bra
 
 
 
-$wynik = mysql_query("SELECT pr.id,pr.stopien,pr.imie,pr.nazwisko,pr.wykladowca,pr.admin,uz.nick FROM pracownicy pr left join uzytkownicy uz on uz.id_pracownika=pr.id order by nazwisko") or die('Błąd');
+$wynik = mysql_query("SELECT pr.id,pr.stopien,pr.imie,pr.nazwisko,pr.wykladowca,pr.admin,uz.nick FROM pracownicy pr left join uzytkownicy uz on uz.id_pracownika=pr.id order by nazwisko") or die('Błąd'); //zapytanie do tabel z bazy danych
 $i=1;
-if(mysql_num_rows($wynik) > 0) {
+if(mysql_num_rows($wynik) > 0) {// jeżeli wynik zapytania > 0 tworzymy tabele z polami do wpisania
     echo "<table class=\"table table-striped table-responsive\" ";
     echo "<tr><th>Lp.</th><th>Stopień</th><th>Imię</th><th>Nazwisko</th><th>Wykładowca</th><th>Administrator</th><th>Login</th><th>Hasło</th><th></th></tr>";
     while($r = mysql_fetch_assoc($wynik)) {
@@ -186,7 +181,7 @@ if(mysql_num_rows($wynik) > 0) {
 
 
 
-
+/* wyświetlanie pól do dodania nowego pracownika */
 echo "
 <tr>
 <td style=\"vertical-align: middle;\">".$i."</td>
@@ -211,19 +206,11 @@ echo "
 
     echo "</table>";
 
-
-
-
 }
-
-
-
 
  ?>
 		</div>
 	</div>
-
-
 
 <?php include("foot.php");?>
 </div>
