@@ -1,13 +1,8 @@
 <?php
 include("config.php");
 
-
-
 $a = trim($_GET['a']);
 $id = trim($_GET['id']);
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +26,6 @@ $id = trim($_GET['id']);
       <a class="btn btn-primary btn-large" href="index.php">Powrót</a>
 
 
-
       			<h2>
       				Plan zajęć
       			</h2>
@@ -42,9 +36,9 @@ $id = trim($_GET['id']);
 
       <?php
 
-      $wynik = mysql_query("SELECT * FROM rocznik Where koniec=1  order by nazwa") or die('Błąd');
+      $wynik = mysql_query("SELECT * FROM rocznik Where koniec=1  order by nazwa") or die('Błąd'); // zapytanie do tabeli rocznik gdzie plan jest skończony
 		$i=1;
-	if(mysql_num_rows($wynik) > 0) {
+	if(mysql_num_rows($wynik) > 0) {// jeżeli wynik zapytania > 0 tworzymy tabele z polami do wpisania
 		echo "<table class=\"table table-striped table-responsive\" ";
 		echo "<tr><th>Lp.</th><th>Nazwa</th><th></th></tr>";
     while($r = mysql_fetch_assoc($wynik)) {
@@ -91,7 +85,7 @@ order by plan.dzien,plan.godzina,rn,grupy.nazwa,sale.numer") or die('Błąd');
 
 
   if(mysql_num_rows($wynik) > 0) {
-    #--------- Tabela ------------
+    /* Wyświetlanie tabeli z planem zajęć */
     echo "<table class=\"table table-bordered table-responsive\" ";
     echo "<tr><th></th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th></tr>";
     $i=1;
@@ -155,7 +149,7 @@ order by plan.dzien,plan.godzina,rn,grupy.nazwa,sale.numer") or die('Błąd');
 
 
     echo "</table>";
- 
+ 	/* wyświetlanie przycisków do eksportu danych */
       echo "Aktualizacja planu: ".$data;
 	  echo "<br/><br/><a class=\"btn btn-primary btn-large\" href=\"csv.php?id=".$id."\">Eksport do CSV</a>&nbsp;";
       echo "<a class=\"btn btn-primary btn-large\" href=\"tcpdf/examples/pdf.php?id=".$id."\">Eksport do PDF</a>";
@@ -164,25 +158,13 @@ else {
   echo "Plan nie został jeszcze dodany...";
 }
 
-
-
   }  ?>
-
 
 		</div>
 	</div>
 
-
-
 <?php include("foot.php");?>
 </div>
-
-<script>
-function wybi() {
-    var x = document.getElementById("wyb").value;
-    window.location.href = "zobacz_plan.php?a=zobacz&id="+x;
-}
-</script>
 
 </body>
 </html>
