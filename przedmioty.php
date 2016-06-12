@@ -6,14 +6,14 @@ $haslo = $_SESSION['haslo'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'logowanie.php?error=4';
 	header("Location: http://$host$uri/$extra");
-}
+}// sprawdzanie loginu i hasła
 $user = mysql_fetch_array(mysql_query("SELECT * FROM uzytkownicy WHERE `nick`='$nick' AND `haslo`='$haslo' LIMIT 1"));
     if (empty($user[id]) OR !isset($user[id])) {
 	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	$extra = 'logowanie.php?error=4';
 	header("Location: http://$host$uri/$extra");
-}
+}// spradzanie czy użytkownik istnieje
 
 $a = trim($_REQUEST['a']);
 $id = trim($_GET['id']);
@@ -24,7 +24,7 @@ if($a == 'save') {
     $id = $_POST['id'];
     $nazwa = trim($_POST['nazwa']);
 	$komentarz = trim($_POST['komentarz']);
-
+	/* aktualizacja tabeli przedmioty */
     mysql_query("UPDATE przedmioty SET nazwa='$nazwa', komentarz='$komentarz' WHERE id='$id'") or die('Błąd zapytania');
     $host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
@@ -35,8 +35,7 @@ elseif($a == 'del') {
     $id = $_GET['id'];
     $nazwa = trim($_POST['nazwa']);
 	$komentarz = trim($_POST['komentarz']);
-
-
+	/* usuwanie danych z tabeli przedmioty */
     mysql_query("DELETE FROM przedmioty WHERE id='$id'") or die('Błąd zapytania');
     $host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
@@ -47,7 +46,7 @@ elseif($a == 'add') {
     $id = $_POST['id'];
     $nazwa = trim($_POST['nazwa']);
 	$komentarz = trim($_POST['komentarz']);
-
+	/* dodawanie danych do tabeli przedmioty */
     mysql_query("INSERT INTO przedmioty (nazwa,komentarz) VALUES ('$nazwa','$komentarz')") or die('Błąd zapytania');
     $host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
@@ -96,9 +95,9 @@ if ($_GET['i']=="dod") {echo "<p class=\"alert alert-success\" role=\"alert\">Da
 
 
 
-$wynik = mysql_query("SELECT * FROM przedmioty order by nazwa") or die('Błąd');
+$wynik = mysql_query("SELECT * FROM przedmioty order by nazwa") or die('Błąd');// zapytanie do tabeli przedmioty
 $i=1;
-if(mysql_num_rows($wynik) > 0) {
+if(mysql_num_rows($wynik) > 0) {// jezeli wynik zapytania > 0 tworzymy tabele z polami do wpisania danych
     echo "<table class=\"table table-striped table-responsive\" ";
     echo "<tr><th>Lp.</th><th>Nazwa</th><th>Komentarz</th><th></th></tr>";
     while($r = mysql_fetch_assoc($wynik)) {
@@ -117,7 +116,7 @@ if(mysql_num_rows($wynik) > 0) {
         <a class=\"btn btn-danger btn-sm\" href=\"przedmioty.php?a=del&amp;id={$r['id']}\">Usuń</a></td>";
         echo "</tr>";
     }
-
+/* wyświetlenie pól do wpisania nowego przemiotu */
 echo "
 <tr>
 <td style=\"vertical-align: middle;\">".$i."</td>
