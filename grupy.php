@@ -103,7 +103,7 @@ if ($_GET['i']=="dod") {echo "<p class=\"alert alert-success\" role=\"alert\">Da
 
 $wynik = mysql_query("SELECT * FROM grupy order by nazwa") or die('Błąd'); // zapytanie do tabeli grupy
 $i=1;
-if(mysql_num_rows($wynik) > 0) { // jeżeli wynik < 0 tworzymy tabele z polami do wypełnienia
+if(mysql_num_rows($wynik) > 0) { // jeżeli wynik zapytania > 0 tworzymy tabele z polami do wypełnienia
     echo "<table class=\"table table-striped table-responsive\" ";
     echo "<tr><th>Lp.</th><th>Nazwa</th><th>Rocznik</th><th></th></tr>";
     while($r = mysql_fetch_assoc($wynik)) {
